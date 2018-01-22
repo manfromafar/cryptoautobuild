@@ -48,6 +48,7 @@ output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure 
 output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
 else
 cd src
+sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
 if [[ ! -e 'obj' ]]; then
  sudo mkdir obj
 elif [[ ! -d 'obj' ]]; then
