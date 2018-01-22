@@ -41,7 +41,8 @@ exit 0
 fi
 cd "${coin}"
 cd src
-sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
+sudo sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
+sudo sed -i 's/<CScriptID&>/<CScriptID>/g' rpcrawtransaction.cpp
 cd ..
 if [ -f autogen.sh ]; then
 sudo ./autogen.sh
