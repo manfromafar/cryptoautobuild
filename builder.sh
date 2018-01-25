@@ -43,7 +43,7 @@ cd "${coin}"
 cd src
 sudo sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
 sudo sed -i 's/<CScriptID&>/<CScriptID>/g' rpcrawtransaction.cpp
-mkdir obj/crypto
+sudo mkdir obj/crypto
 cd ..
 if [ -f autogen.sh ]; then
 sudo ./autogen.sh
