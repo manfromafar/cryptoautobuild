@@ -44,6 +44,7 @@ cd src
 sudo sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
 sudo sed -i 's/<CScriptID&>/<CScriptID>/g' rpcrawtransaction.cpp
 sudo mkdir obj/crypto
+sudo mkdir -p obj/zerocoin && chmod +x leveldb/build_detect_platform‏
 cd ..
 if [ -f autogen.sh ]; then
     sudo ./autogen.sh
