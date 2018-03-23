@@ -51,6 +51,7 @@ if [ -f autogen.sh ]; then
     sudo ./autogen.sh
     sudo chmod +x ./configure
     sudo ./configure CPPFLAGS="-I/usr/local/include"
+    sudo chmod +x share/genbuild.sh
     sudo make
     output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
     output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
