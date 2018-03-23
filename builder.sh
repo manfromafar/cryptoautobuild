@@ -41,8 +41,13 @@ fi
 
 cd "${coin}"
 cd src
+
+if [ -f rpcrawtransaction.cpp ]; then
+
 sudo sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
 sudo sed -i 's/<CScriptID&>/<CScriptID>/g' rpcrawtransaction.cpp
+
+fi
 sudo mkdir obj/crypto
 sudo mkdir -p obj/zerocoin && sudo chmod +x leveldb/build_detect_platform
 cd ..
