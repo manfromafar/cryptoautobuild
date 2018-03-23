@@ -44,10 +44,12 @@ cd src
 sudo sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
 sudo sed -i 's/<CScriptID&>/<CScriptID>/g' rpcrawtransaction.cpp
 sudo mkdir obj/crypto
-sudo mkdir -p obj/zerocoin && chmod +x leveldb/build_detect_platform‏
+sudo mkdir -p obj/zerocoin && sudo chmod +x leveldb/build_detect_platform
 cd ..
 if [ -f autogen.sh ]; then
+    sudo chmod +x ./autogen.sh
     sudo ./autogen.sh
+    sudo chmod +x ./configure
     sudo ./configure CPPFLAGS="-I/usr/local/include"
     sudo make
     output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
