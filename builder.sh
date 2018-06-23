@@ -57,7 +57,7 @@ if [ -f autogen.sh ]; then
     sudo chmod +x ./configure
     sudo ./configure CPPFLAGS="-I/usr/local/include"
     sudo chmod +x share/genbuild.sh
-    sudo make
+    sudo make -j 2
     output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
     output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
     exit 0
@@ -69,7 +69,7 @@ else
     sudo make clean
     sudo make libleveldb.a libmemenv.a
     cd ..
-    sudo make -f makefile.unix
+    sudo make -j 2 -f makefile.unix
     output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
     output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
 fi
