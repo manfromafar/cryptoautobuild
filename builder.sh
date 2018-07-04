@@ -1,12 +1,13 @@
 #!/bin/bash
 ################################################################################
 # Author: crombiecrunch
-#
-# Web: www.thecryptopool.com
+# Current Author: mario1987
+
+# Web: www.cryptonova.eu
 #
 # Program:
 #   After entering coin name and github link automatically build coin
-# BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD
+# BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD
 #
 ################################################################################
 
@@ -30,7 +31,7 @@ output "This script assumes you already have the dependicies installed on your s
 output ""
 read -e -p "Enter the name of the coin : " coin
 read -e -p "Paste the github link for the coin : " git_hub
-
+read -e -p "How many threads must be used at least > 1 (This depends on the number of available threads the cpu has)!! : " threads
 if [[ ! -e '$coin' ]]; then
     sudo  git clone $git_hub  $coin
 elif [[ ! -d ~$CoinBuilds/$coin ]]; then
@@ -57,9 +58,9 @@ if [ -f autogen.sh ]; then
     sudo chmod +x ./configure
     sudo ./configure CPPFLAGS="-I/usr/local/include"
     sudo chmod +x share/genbuild.sh
-    sudo make -j 2
+    sudo make -j $threads
     output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
-    output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
+    output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
     exit 0
 else
     cd src
@@ -69,7 +70,8 @@ else
     sudo make clean
     sudo make libleveldb.a libmemenv.a
     cd ..
-    sudo make -j 2 -f makefile.unix
+    sudo make -j $threads -f makefile.unix
     output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
-    output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
+    output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+    exit 0*
 fi
