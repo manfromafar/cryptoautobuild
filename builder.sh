@@ -35,6 +35,7 @@ read -e -p "Enter the name of the coin : " coin
 read -e -p "Paste the github link for the coin : " git_hub
 read -e -p "How many threads must be used at least > 1 [1/8] depending on CPU! : " threads
 read -e -p "Rename and replace to bin folder [y/n] : " replace
+read -e -p "Delete the coin folder after compilation ?  [y/n] : " coinfolder
 
 if [[ ! -e '$coin' ]]; then
     sudo  git clone $git_hub  $coin
@@ -46,6 +47,22 @@ fi
 
 cd "${coin}"
 cd src
+
+getDeamon()
+{
+    for deamon in `find . -executable -type f -name "*d" `; do [ -x $deamon ]; done
+    echo $deamon
+}
+getCli()
+{
+    for cli in `find . -executable -type f -name "*-cli" `; do [ -x $cli ]; done
+    echo $cli
+}
+getTx()
+{
+    for tx in `find . -executable -type f -name "*-tx" `; do [ -x $tx ]; done
+    echo $tx
+}
 
 if [ -f rpcrawtransaction.cpp ]; then
 
@@ -63,22 +80,7 @@ if [ -f autogen.sh ]; then
     sudo ./configure CPPFLAGS="-I/usr/local/include"
     sudo chmod +x share/genbuild.sh
     sudo make -j $threads
-    
-    getDeamon()
-    {
-         for deamon in `find -type f -name "*d" `; do [ -x $deamon ]; done
-         echo $deamon
-    }
-    getCli()
-    {
-        for cli in `find -type f -name "*-cli" `; do [ -x $cli ]; done
-        echo $cli
-    }
-    getTx()
-    {
-         for tx in `find -type f -name "*-tx" `; do [ -x $tx ]; done
-         echo $tx
-    }
+ 
     if [ $replace == "y" ]; then
         if [ ! -z $(getDeamon) ]; then
             Deamon=$(getDeamon)
@@ -100,12 +102,20 @@ if [ -f autogen.sh ]; then
         else
             echo "No Deamon-Tx is found"
         fi  
-        output "$coin_name finished and can be used as "$coin"Wallet"
+        output "$coin_name finished and can be used as "$coin"Wallet -deamon"
         output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            sudo rm -r $coin
+        fi
         exit 0
     else 
         output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
-        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        output "Like my script? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            sudo rm -r $coin
+        fi
         exit 0 
     fi
 else
@@ -117,21 +127,7 @@ else
     sudo make libleveldb.a libmemenv.a
     cd ..
     sudo make -j $threads -f makefile.unix
-    getDeamon()
-    {
-        for deamon in `find -type f -name "*coind" `; do [ -x $deamon ]; done
-        echo $deamon
-    }
-    getCli()
-    {
-        for cli in `find -type f -name "*coin-cli" `; do [ -x $cli ]; done
-        echo $cli
-    }
-    getTx()
-    {
-        for tx in `find -type f -name "*coin-tx" `; do [ -x $tx ]; done
-        echo $tx
-    }
+    
     if [ $replace == "y" ]; then
         if [ ! -z $(getDeamon) ]; then
             Deamon=$(getDeamon)
@@ -145,18 +141,28 @@ else
         else
             echo "No Deamon-Cli if found"
         fi
-       if [ ! -z $(getTx) ]; then
+        if [ ! -z $(getTx) ]; then
             Tx=$(getTx)
             sudo cp $Tx /usr/bin/$coin"Wallet-tx"
         else
             echo "No Deamon-Tx is found"
         fi  
-        output "$coin_name finished and can be used as "$coin"Wallet"
-        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        output "$coin_name finished and can be used as "$coin"Wallet -deamon"
+        output "Like my script? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            cd ..
+            sudo rm -r $coin
+        fi
         exit 0
     else
         output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
-        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        output "Like my script? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            cd ..
+            sudo rm -r $coin
+        fi
         exit 0
     fi
 fi
