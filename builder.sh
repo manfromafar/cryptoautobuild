@@ -104,7 +104,8 @@ if [ -f autogen.sh ]; then
     else 
         output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
         output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
-        exit 0        
+        exit 0 
+    fi
 else
     cd src
     sudo mkdir -p obj
