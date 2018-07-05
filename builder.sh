@@ -31,7 +31,9 @@ output "This script assumes you already have the dependicies installed on your s
 output ""
 read -e -p "Enter the name of the coin : " coin
 read -e -p "Paste the github link for the coin : " git_hub
-read -e -p "How many threads must be used at least > 1 (This depends on the number of available threads the cpu has)!! : " threads
+read -e -p "How many threads must be used at least > 1 [1/8] depending on CPU! : " threads
+read -e -p "Rename and replace to bin folder [y/n] : " replace
+
 if [[ ! -e '$coin' ]]; then
     sudo  git clone $git_hub  $coin
 elif [[ ! -d ~$CoinBuilds/$coin ]]; then
@@ -59,9 +61,50 @@ if [ -f autogen.sh ]; then
     sudo ./configure CPPFLAGS="-I/usr/local/include"
     sudo chmod +x share/genbuild.sh
     sudo make -j $threads
-    output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
-    output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
-    exit 0
+    
+    getDeamon()
+    {
+        for deamon in `find -type f -name "*coind" `; do [ -x $deamon ]; done
+        echo $deamon
+    }
+    getCli()
+    {
+        for cli in `find -type f -name "*coin-cli" `; do [ -x $cli ]; done
+        echo $cli
+    }
+    getTx()
+    {
+        for tx in `find -type f -name "*coin-tx" `; do [ -x $tx ]; done
+        echo $tx
+    }
+    if [ $replace == "y" ]; then
+        if [ ! -z $(getDeamon) ]; then
+            Deamon=$(getDeamon)
+            sudo cp $Deamon /usr/bin/$coin"Wallet"
+        else
+            echo "No Deamon is found"
+        fi
+        
+        if [ ! -z $(getCli) ]; then
+            Cli=$(getCli)
+            sudo cp $Cli /usr/bin/$coin"Wallet-cli"
+        else
+            echo "No Deamon-Cli if found"
+        fi
+        
+        if [ ! -z $(getTx) ]; then
+            Tx=$(getTx)
+            sudo cp $Tx /usr/bin/$coin"Wallet-tx"
+        else
+            echo "No Deamon-Tx is found"
+        fi  
+        output "$coin_name finished and can be used as "$coin"Wallet"
+        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        exit 0
+    else 
+        output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
+        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        exit 0        
 else
     cd src
     sudo mkdir -p obj
@@ -71,7 +114,45 @@ else
     sudo make libleveldb.a libmemenv.a
     cd ..
     sudo make -j $threads -f makefile.unix
-    output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
-    output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+    getDeamon()
+    {
+        for deamon in `find -type f -name "*coind" `; do [ -x $deamon ]; done
+        echo $deamon
+    }
+    getCli()
+    {
+        for cli in `find -type f -name "*coin-cli" `; do [ -x $cli ]; done
+        echo $cli
+    }
+    getTx()
+    {
+        for tx in `find -type f -name "*coin-tx" `; do [ -x $tx ]; done
+        echo $tx
+    }
+    if [ $replace == "y" ]; then
+        if [ ! -z $(getDeamon) ]; then
+            Deamon=$(getDeamon)
+            sudo cp $Deamon /usr/bin/$coin"Wallet"
+        else
+            echo "No Deamon is found"
+        fi
+        if [ ! -z $(getCli) ]; then
+            Cli=$(getCli)
+            sudo cp $Cli /usr/bin/$coin"Wallet-cli"
+        else
+            echo "No Deamon-Cli if found"
+        fi
+       if [ ! -z $(getTx) ]; then
+            Tx=$(getTx)
+            sudo cp $Tx /usr/bin/$coin"Wallet-tx"
+        else
+            echo "No Deamon-Tx is found"
+        fi  
+        output "$coin_name finished and can be used as "$coin"Wallet"
+        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        exit 0
+    else
+        output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
+        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
     exit 0
 fi
