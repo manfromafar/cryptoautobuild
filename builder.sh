@@ -23,11 +23,17 @@ displayErr() {
     echo
     exit 1;
 }
-cd
+cd ~
 
-sudo mkdir -p ~/CoinBuilds
-sudo mkdir CoinBuilds
-cd ~/CoinBuilds
+if [[ ! -e 'CoinBuilds' ]]; then
+    sudo mkdir -p ~/CoinBuilds
+    sudo mkdir CoinBuilds
+    cd ~/CoinBuilds
+elif [[ ! -d 'CoinBuilds' ]]; then
+    output "Coinbuilds already exists.... Skipping" 1>&2
+fi
+clear
+cd CoinBuilds
 
 output "This script assumes you already have the dependicies installed on your system!"
 output ""
