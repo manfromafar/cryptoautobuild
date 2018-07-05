@@ -23,15 +23,11 @@ displayErr() {
     echo
     exit 1;
 }
+cd
 
-cd ~
-if [[ ! -e 'CoinBuilds' ]]; then
-    sudo mkdir -p ~/CoinBuilds
-    sudo mkdir CoinBuilds
-    cd ~/CoinBuilds
-elif [[ ! -d 'CoinBuilds' ]]; then
-    output "Coinbuilds already exists.... Skipping" 1>&2
-fi
+sudo mkdir -p ~/CoinBuilds
+sudo mkdir CoinBuilds
+cd ~/CoinBuilds
 
 output "This script assumes you already have the dependicies installed on your system!"
 output ""
@@ -70,18 +66,18 @@ if [ -f autogen.sh ]; then
     
     getDeamon()
     {
-        for deamon in `find -type f -name "*coind" `; do [ -x $deamon ]; done
-        echo $deamon
+         for deamon in `find -type f -name "*d" `; do [ -x $deamon ]; done
+         echo $deamon
     }
     getCli()
     {
-        for cli in `find -type f -name "*coin-cli" `; do [ -x $cli ]; done
+        for cli in `find -type f -name "*-cli" `; do [ -x $cli ]; done
         echo $cli
     }
     getTx()
     {
-        for tx in `find -type f -name "*coin-tx" `; do [ -x $tx ]; done
-        echo $tx
+         for tx in `find -type f -name "*-tx" `; do [ -x $tx ]; done
+         echo $tx
     }
     if [ $replace == "y" ]; then
         if [ ! -z $(getDeamon) ]; then
