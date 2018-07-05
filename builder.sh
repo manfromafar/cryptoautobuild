@@ -24,8 +24,14 @@ displayErr() {
     exit 1;
 }
 
-sudo mkdir -p ~/CoinBuilds
-cd ~/CoinBuilds
+cd ~
+if [[ ! -e 'CoinBuilds' ]]; then
+    sudo mkdir -p ~/CoinBuilds
+    sudo mkdir CoinBuilds
+    cd ~/CoinBuilds
+elif [[ ! -d 'CoinBuilds' ]]; then
+    output "Coinbuilds already exists.... Skipping" 1>&2
+fi
 
 output "This script assumes you already have the dependicies installed on your system!"
 output ""
@@ -155,4 +161,6 @@ else
     else
         output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
         output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
-    exit 0
+        exit 0
+    fi
+fi
