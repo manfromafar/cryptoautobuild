@@ -41,7 +41,7 @@ read -e -p "Enter the name of the coin : " coin
 read -e -p "Paste the github link for the coin : " git_hub
 read -e -p "How many threads must be used at least > 1 [1/8] depending on CPU! : " threads
 read -e -p "Rename and replace to bin folder [y/n] : " replace
-read -e -p "Delete the coin folder after compilation ?  [y/n] : " coinfolder
+read -e -p "Delete the coin folder after completion ?  [y/n] : " coinfolder
 
 if [[ ! -e '$coin' ]]; then
     sudo  git clone $git_hub  $coin
