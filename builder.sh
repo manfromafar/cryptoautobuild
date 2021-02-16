@@ -1,19 +1,22 @@
 #!/bin/bash
 ################################################################################
 # Author: crombiecrunch
-#
-# Web: www.thecryptopool.com
+# Current Author: mario1987
+
+# Web: www.cryptonova.eu
 #
 # Program:
 #   After entering coin name and github link automatically build coin
-# BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD
+# BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD
 #
 ################################################################################
+
 output() {
     printf "\E[0;33;40m"
     echo $1
     printf "\E[0m"
 }
+
 displayErr() {
     echo
     echo $1;
@@ -21,45 +24,151 @@ displayErr() {
     exit 1;
 }
 cd ~
+
 if [[ ! -e 'CoinBuilds' ]]; then
- sudo mkdir CoinBuilds
+    sudo mkdir -p ~/CoinBuilds
+    sudo mkdir CoinBuilds
+    cd ~/CoinBuilds
 elif [[ ! -d 'CoinBuilds' ]]; then
     output "Coinbuilds already exists.... Skipping" 1>&2
 fi
 clear
 cd CoinBuilds
+
 output "This script assumes you already have the dependicies installed on your system!"
 output ""
-    read -e -p "Enter the name of the coin : " coin
-    read -e -p "Paste the github link for the coin : " git_hub
+read -e -p "Enter the name of the coin : " coin
+read -e -p "Paste the github link for the coin : " git_hub
+read -e -p "How many threads must be used at least > 1 [1/8] depending on CPU! : " threads
+read -e -p "Rename and replace to bin folder [y/n] : " replace
+read -e -p "Delete the coin folder after completion ?  [y/n] : " coinfolder
+
 if [[ ! -e '$coin' ]]; then
-sudo  git clone $git_hub  $coin
+    sudo  git clone $git_hub  $coin
 elif [[ ! -d ~$CoinBuilds/$coin ]]; then
     output "Coinbuilds/$coin already exists.... Skipping" 1>&2
-output "Can not continue"
-exit 0
+    output "Can not continue"
+    exit 0
 fi
-cd "${coin}"
-if [ -f autogen.sh ]; then
-sudo ./autogen.sh
-sudo ./configure CPPFLAGS="-I/usr/local/include"
-sudo make
-output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
-output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
-else
-cd src
-if [[ ! -e 'obj' ]]; then
- sudo mkdir obj
-elif [[ ! -d 'obj' ]]; then
-    output "Hey the developer did his job" 1>&2
-fi
-cd leveldb
-sudo chmod +x build_detect_platform
-sudo make clean
-sudo make libleveldb.a libmemenv.a
-cd ..
-sudo make -f makefile.unix
-output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
 
-output "Like my scripts? Please Donate to BTC Donation: 16xpWzWP2ZaBQWQCDAaseMZBFwnwRUL4bD"
+cd "${coin}"
+cd src
+
+getDeamon()
+{
+    for deamon in `find . -executable -type f -name "*d" `; do [ -x $deamon ]; done
+    echo $deamon
+}
+getCli()
+{
+    for cli in `find . -executable -type f -name "*-cli" `; do [ -x $cli ]; done
+    echo $cli
+}
+getTx()
+{
+    for tx in `find . -executable -type f -name "*-tx" `; do [ -x $tx ]; done
+    echo $tx
+}
+
+if [ -f rpcrawtransaction.cpp ]; then
+
+sudo sed -i 's/<const\ CScriptID\&/<CScriptID/' rpcrawtransaction.cpp
+sudo sed -i 's/<CScriptID&>/<CScriptID>/g' rpcrawtransaction.cpp
+
+fi
+sudo mkdir obj/crypto
+sudo mkdir -p obj/zerocoin && sudo chmod +x leveldb/build_detect_platform
+cd ..
+if [ -f autogen.sh ]; then
+    sudo chmod +x ./autogen.sh
+    sudo ./autogen.sh
+    sudo chmod +x ./configure
+    sudo ./configure CPPFLAGS="-I/usr/local/include"
+    sudo chmod +x share/genbuild.sh
+    sudo make -j $threads
+ 
+    if [ $replace == "y" ]; then
+        if [ ! -z $(getDeamon) ]; then
+            Deamon=$(getDeamon)
+            sudo cp $Deamon /usr/bin/$coin"Wallet"
+        else
+            echo "No Deamon is found"
+        fi
+        
+        if [ ! -z $(getCli) ]; then
+            Cli=$(getCli)
+            sudo cp $Cli /usr/bin/$coin"Wallet-cli"
+        else
+            echo "No Deamon-Cli if found"
+        fi
+        
+        if [ ! -z $(getTx) ]; then
+            Tx=$(getTx)
+            sudo cp $Tx /usr/bin/$coin"Wallet-tx"
+        else
+            echo "No Deamon-Tx is found"
+        fi  
+        output "$coin_name finished and can be used as "$coin"Wallet -deamon"
+        output "Like my scripts? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            sudo rm -r $coin
+        fi
+        exit 0
+    else 
+        output "$coin_name finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
+        output "Like my script? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            sudo rm -r $coin
+        fi
+        exit 0 
+    fi
+else
+    cd src
+    sudo mkdir -p obj
+    cd leveldb
+    sudo chmod +x build_detect_platform
+    sudo make clean
+    sudo make libleveldb.a libmemenv.a
+    cd ..
+    sudo make -j $threads -f makefile.unix
+    
+    if [ $replace == "y" ]; then
+        if [ ! -z $(getDeamon) ]; then
+            Deamon=$(getDeamon)
+            sudo cp $Deamon /usr/bin/$coin"Wallet"
+        else
+            echo "No Deamon is found"
+        fi
+        if [ ! -z $(getCli) ]; then
+            Cli=$(getCli)
+            sudo cp $Cli /usr/bin/$coin"Wallet-cli"
+        else
+            echo "No Deamon-Cli if found"
+        fi
+        if [ ! -z $(getTx) ]; then
+            Tx=$(getTx)
+            sudo cp $Tx /usr/bin/$coin"Wallet-tx"
+        else
+            echo "No Deamon-Tx is found"
+        fi  
+        output "$coin_name finished and can be used as "$coin"Wallet -deamon"
+        output "Like my script? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            cd ..
+            sudo rm -r $coin
+        fi
+        exit 0
+    else
+        output "$coin finished and can be found in CoinBuilds/$coin/src/ Make sure you sudo strip Coind and coin-cli if it exists, copy to /usr/bin"
+        output "Like my script? Please Donate to BTC Donation: 1FKxuqNi8ZfzWHtUyLR2kogpXihbZchSuD"
+        if [ $coinfolder == "y" ]; then
+            cd ..
+            cd ..
+            sudo rm -r $coin
+        fi
+        exit 0
+    fi
 fi
